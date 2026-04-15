@@ -4,15 +4,13 @@ export const useAuth = () => {
         return user ? JSON.parse(user) : null;
     };
 
-    const getToken = () => localStorage.getItem("token");
+    const getToken = () => null;
 
-    const setAuth = (token, user) => {
-        localStorage.setItem("token", token);
+    const setAuth = (user) => {
         localStorage.setItem("user", JSON.stringify(user));
     };
 
     const logout = () => {
-        localStorage.removeItem("token");
         localStorage.removeItem("user");
     };
 

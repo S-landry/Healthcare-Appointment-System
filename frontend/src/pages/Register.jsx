@@ -27,7 +27,7 @@ export default function Register() {
         setLoading(true);
         try {
             const { data } = await auth.register(formData);
-            setAuth(data.token, data.user);
+            setAuth(data.user);
             navigate("/patient");
         } catch (err) {
             setError(err.response?.data?.error || "Registration failed");

@@ -15,7 +15,7 @@ export default function Login() {
         setLoading(true);
         try {
             const { data } = await auth.login(formData);
-            setAuth(data.token, data.user);
+            setAuth(data.user);
             navigate(data.user.role === "admin" ? "/admin" : data.user.role === "doctor" ? "/doctor" : "/patient");
         } catch (err) {
             setError(err.response?.data?.error || "Login failed");

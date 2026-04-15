@@ -1,12 +1,18 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/auth";
+import { auth } from "../utils/api";
 
 export default function Navbar() {
     const navigate = useNavigate();
     const { getUser, logout } = useAuth();
     const user = getUser();
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            await auth.logout();
+        } catch (error) {
+            // Clear local auth state even if server session termination fails.
+        }
         logout();
         navigate("/login");
     };

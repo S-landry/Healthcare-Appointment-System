@@ -1,6 +1,5 @@
 const User = require("../models/User");
 const Doctor = require("../models/Doctor");
-const { generateToken } = require("../middleware/auth");
 const bcrypt = require("bcryptjs");
 
 exports.createDoctor = async (req, res) => {
