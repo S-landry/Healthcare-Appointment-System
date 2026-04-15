@@ -1,38 +1,58 @@
-import axios from "axios";
+const BASE_URL = "/api";
 
-const API = axios.create({ baseURL: "/api" });
+const request = async (path, options = {}) => {
+    const response = await fetch(`${BASE_URL}${path}`, {
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+            ...(options.headers || {})
+        },
+        ...options
+    });
 
-API.interceptors.request.use((config) => {
-    const token = localStorage.getItem("token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-    return config;
-});
+    const contentType = response.headers.get("content-type") || "";
+    const data = contentType.includes("application/json")
+        ? await response.json()
+        : await response.text();
+
+    if (!response.ok) {
+        throw {
+            response: {
+                status: response.status,
+                data
+            }
+        };
+    }
+
+    return { data };
+};
 
 export const auth = {
-    register: (data) => API.post("/auth/register", data),
-    login: (data) => API.post("/auth/login", data)
+    register: (data) => request("/auth/register", { method: "POST", body: JSON.stringify(data) }),
+    login: (data) => request("/auth/login", { method: "POST", body: JSON.stringify(data) }),
+    logout: () => request("/auth/logout", { method: "POST" })
 };
 
 export const doctors = {
-    getAll: () => API.get("/doctors"),
-    getById: (id) => API.get(`/doctors/${id}`),
-    create: (data) => API.post("/doctors/create", data),
-    updateProfile: (data) => API.put("/doctors/profile", data)
+    getAll: () => request("/doctors"),
+    getById: (id) => request(`/doctors/${id}`),
+    create: (data) => request("/doctors/create", { method: "POST", body: JSON.stringify(data) }),
+    updateProfile: (data) => request("/doctors/profile", { method: "PUT", body: JSON.stringify(data) })
 };
 
 export const appointments = {
-    book: (data) => API.post("/appointments/book", data),
-    getPatient: () => API.get("/appointments/patient"),
-    getDoctor: () => API.get("/appointments/doctor"),
-    updateStatus: (id, status) => API.put(`/appointments/${id}/status`, { status }),
-    cancel: (id) => API.put(`/appointments/${id}/cancel`)
+    book: (data) => request("/appointments/book", { method: "POST", body: JSON.stringify(data) }),
+    getPatient: () => request("/appointments/patient"),
+    getDoctor: () => request("/appointments/doctor"),
+    updateStatus: (id, status) => request(`/appointments/${id}/status`, { method: "PUT", body: JSON.stringify({ status }) }),
+    cancel: (id) => request(`/appointments/${id}/cancel`, { method: "PUT" })
 };
 
 export const admin = {
-    getUsers: () => API.get("/admin/users"),
-    getAppointments: () => API.get("/admin/appointments"),
-    getStatistics: () => API.get("/admin/statistics"),
-    deleteUser: (id) => API.delete(`/admin/users/${id}`)
+    getUsers: () => request("/admin/users"),
+    getAppointments: () => request("/admin/appointments"),
+    getStatistics: () => request("/admin/statistics"),
+    deleteUser: (id) => request(`/admin/users/${id}`, { method: "DELETE" })
 };
 
-export default API;
+export default request;
