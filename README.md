@@ -269,5 +269,3 @@ The application uses a professional minimalist design:
 - Payment integration
 - Real-time notifications
 - Advanced filtering and search
-
-
